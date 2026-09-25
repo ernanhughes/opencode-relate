@@ -1,0 +1,88 @@
+{
+  "battery": "relate-v0.1",
+  "n": 24,
+  "unknown_coverage": 0.125,
+  "accuracy_at_coverage": 0.7142857142857143,
+  "strict_accuracy": 0.625,
+  "by_overlap_stratum": {
+    "high": {
+      "n": 10,
+      "correct": 8
+    },
+    "mid": {
+      "n": 8,
+      "correct": 5
+    },
+    "low": {
+      "n": 6,
+      "correct": 2
+    }
+  },
+  "confusion": {
+    "CONTRADICTS": {
+      "CONTRADICTS": 5,
+      "UPDATES": 1,
+      "SUPPORTS": 1
+    },
+    "IMPLEMENTS": {
+      "IMPLEMENTS": 2,
+      "RELATED": 1
+    },
+    "SUPPORTS": {
+      "SUPPORTS": 3,
+      "RELATED": 1,
+      "IMPLEMENTS": 1
+    },
+    "UPDATES": {
+      "UPDATES": 2,
+      "SUPPORTS": 2
+    },
+    "RELATED": {
+      "UPDATES": 1,
+      "UNKNOWN": 1,
+      "RELATED": 1
+    },
+    "UNKNOWN": {
+      "UNKNOWN": 2
+    }
+  },
+  "misses": [
+    {
+      "id": "polarity-opposite-claim",
+      "gold": "CONTRADICTS",
+      "got": "UPDATES",
+      "overlap": "mid"
+    },
+    {
+      "id": "implements-policy",
+      "gold": "IMPLEMENTS",
+      "got": "RELATED",
+      "overlap": "low"
+    },
+    {
+      "id": "related-topic",
+      "gold": "RELATED",
+      "got": "UPDATES",
+      "overlap": "low"
+    },
+    {
+      "id": "hn-temporal-mismatch",
+      "gold": "UPDATES",
+      "got": "SUPPORTS",
+      "overlap": "high"
+    },
+    {
+      "id": "hn-stale-current",
+      "gold": "UPDATES",
+      "got": "SUPPORTS",
+      "overlap": "high"
+    },
+    {
+      "id": "hn-implementation-vs-discussion",
+      "gold": "SUPPORTS",
+      "got": "IMPLEMENTS",
+      "overlap": "mid"
+    }
+  ],
+  "warning": "heuristic-v0.1 self-evaluation on authored fixtures; NOT a retrieval-utility result. Win-over-cosine untested (PEX-R2)."
+}

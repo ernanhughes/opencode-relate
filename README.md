@@ -72,4 +72,4 @@ Also inspect:
 
 ## Status
 
-**Design seed only.** Relation set, classifier strategy, and evaluator must be tested rather than assumed.
+**v0.1 implemented.** Deterministic cue-based classifier (6 relations + first-class UNKNOWN), OpenCode tools (`relate`, `relate_many`, `relate_health`), 24-case frozen battery with hard negatives, coverage-gated evaluator, unit tests, no-inference load check. No embedding model, no LLM judge, no retrieval. Heuristic limits documented in code; win-over-cosine untested (PEX-R2).
