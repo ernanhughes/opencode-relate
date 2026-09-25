@@ -1,0 +1,18 @@
+{
+  "cases": [
+    {
+      "id": "scope-contradiction",
+      "left": "The migration completed successfully.",
+      "right": "The migration failed for tenant 1847.",
+      "expected_family": ["CONTRADICTS", "PARTIAL_SUPPORT", "UNKNOWN"],
+      "note": "Reason about scope and qualification, not lexical similarity."
+    },
+    {
+      "id": "directional-implementation",
+      "left": "ADR-007 requires append-only event history.",
+      "right": "The event writer appends immutable event records and never updates an existing event.",
+      "expected_family": ["IMPLEMENTS", "SUPPORTS", "UNKNOWN"],
+      "note": "Direction is material."
+    }
+  ]
+}
