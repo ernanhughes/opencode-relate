@@ -1,0 +1,58 @@
+{
+  "trace_id": "replay-ex-001",
+  "session_id": "ses_example_001",
+  "observed_at": "2026-09-20T14:03:00Z",
+  "relation": "appropriate_next_action",
+  "subject_kind": "state",
+  "candidate_kind": "action",
+  "state_before": {
+    "text": "The migration failed because the destination schema doesn't contain column customer_type.",
+    "kind": "state"
+  },
+  "candidates_available": [
+    { "id": "inspect-schema", "text": "Inspect the destination schema and list columns", "kind": "action", "elicitation": "logged" },
+    { "id": "retry-migration", "text": "Retry the migration against the same destination", "kind": "action", "elicitation": "logged" },
+    { "id": "increase-timeout", "text": "Increase the migration timeout and retry", "kind": "action", "elicitation": "reconstructed" }
+  ],
+  "action_chosen": "retry-migration",
+  "execution": { "succeeded": "yes", "summary": "Retry ran cleanly and failed identically on the missing column." },
+  "state_after": {
+    "text": "Migration failed again with the same missing-column error; no new information gained.",
+    "kind": "state"
+  },
+  "eventual_outcome": { "result": "success", "notes": "Schema inspected on the next step, column added, third run succeeded." },
+  "outcome_evidence": {
+    "inspect-schema": {
+      "selected": false,
+      "exec_succeeded": "na",
+      "reduced_problem": "unknown",
+      "enabled_later_step": "yes",
+      "created_new_failure": "no",
+      "appropriateness": "NECESSARY",
+      "rationale": "The eventual fix required knowing which columns exist; inspection enabled it."
+    },
+    "retry-migration": {
+      "selected": true,
+      "exec_succeeded": "yes",
+      "reduced_problem": "no",
+      "enabled_later_step": "no",
+      "created_new_failure": "no",
+      "appropriateness": "IRRELEVANT",
+      "rationale": "Chosen and executed, but changed nothing — execution success without problem reduction."
+    },
+    "increase-timeout": {
+      "selected": false,
+      "exec_succeeded": "na",
+      "reduced_problem": "unknown",
+      "enabled_later_step": "no",
+      "created_new_failure": "no",
+      "appropriateness": "IRRELEVANT",
+      "rationale": "Timeout was never the constraint; no evidence it would have helped."
+    }
+  },
+  "provenance": {
+    "source": "session ses_example_001, turns 14-17",
+    "extractor": "manual-v0.1",
+    "annotator_blind_to_scores": true
+  }
+}

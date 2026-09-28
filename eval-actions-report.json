@@ -1,0 +1,214 @@
+{
+  "battery": "relate-action-v0.1",
+  "n": 12,
+  "baselines": {
+    "random": {
+      "top1_accuracy": 0.091,
+      "mrr": 0.523,
+      "pairwise_ordering": 0.519,
+      "per_relation": {
+        "appropriate_next_action": {
+          "n": 4,
+          "correct": 1
+        },
+        "appropriate_remediation": {
+          "n": 2,
+          "correct": 0
+        },
+        "appropriate_tool": {
+          "n": 2,
+          "correct": 0
+        },
+        "appropriate_model": {
+          "n": 2,
+          "correct": 0
+        },
+        "appropriate_context_operation": {
+          "n": 1,
+          "correct": 0
+        }
+      },
+      "misses": [
+        {
+          "case": "migration-missing-column",
+          "top": "increase-timeout",
+          "expected": "inspect-schema"
+        },
+        {
+          "case": "auth-expired-token",
+          "top": "increase-timeout",
+          "expected": "regen-creds"
+        },
+        {
+          "case": "state-lock-conflict",
+          "top": "retry-apply",
+          "expected": "inspect-state"
+        },
+        {
+          "case": "retry-before-inspect-order",
+          "top": "rollback-now",
+          "expected": "inspect-first"
+        },
+        {
+          "case": "tool-find-definition",
+          "top": "bash-exec",
+          "expected": "grep"
+        },
+        {
+          "case": "tool-read-file",
+          "top": "grep",
+          "expected": "read"
+        },
+        {
+          "case": "model-simple-task",
+          "top": "frontier",
+          "expected": "cheap"
+        },
+        {
+          "case": "model-hard-bug",
+          "top": "cheap",
+          "expected": "frontier"
+        },
+        {
+          "case": "context-overflow",
+          "top": "expand",
+          "expected": "compress"
+        },
+        {
+          "case": "multi-acceptable-inspect",
+          "top": "increase-timeout",
+          "expected": "inspect-schema|diagnose-schema"
+        }
+      ]
+    },
+    "cosine": {
+      "top1_accuracy": 0.727,
+      "mrr": 0.864,
+      "pairwise_ordering": 0.815,
+      "per_relation": {
+        "appropriate_next_action": {
+          "n": 4,
+          "correct": 2
+        },
+        "appropriate_remediation": {
+          "n": 2,
+          "correct": 1
+        },
+        "appropriate_tool": {
+          "n": 2,
+          "correct": 2
+        },
+        "appropriate_model": {
+          "n": 2,
+          "correct": 2
+        },
+        "appropriate_context_operation": {
+          "n": 1,
+          "correct": 1
+        }
+      },
+      "misses": [
+        {
+          "case": "migration-missing-column",
+          "top": "retry-migration",
+          "expected": "inspect-schema"
+        },
+        {
+          "case": "state-lock-conflict",
+          "top": "delete-state",
+          "expected": "inspect-state"
+        },
+        {
+          "case": "multi-acceptable-inspect",
+          "top": "retry-migration",
+          "expected": "inspect-schema|diagnose-schema"
+        }
+      ]
+    },
+    "projection": {
+      "top1_accuracy": 0.636,
+      "mrr": 0.788,
+      "pairwise_ordering": 0.481,
+      "per_relation": {
+        "appropriate_next_action": {
+          "n": 4,
+          "correct": 2
+        },
+        "appropriate_remediation": {
+          "n": 2,
+          "correct": 0
+        },
+        "appropriate_tool": {
+          "n": 2,
+          "correct": 2
+        },
+        "appropriate_model": {
+          "n": 2,
+          "correct": 2
+        },
+        "appropriate_context_operation": {
+          "n": 1,
+          "correct": 1
+        }
+      },
+      "misses": [
+        {
+          "case": "migration-missing-column",
+          "top": "delete-state",
+          "expected": "inspect-schema"
+        },
+        {
+          "case": "migration-timeout",
+          "top": "delete-state",
+          "expected": "increase-timeout"
+        },
+        {
+          "case": "auth-expired-token",
+          "top": "increase-timeout",
+          "expected": "regen-creds"
+        },
+        {
+          "case": "state-lock-conflict",
+          "top": "delete-state",
+          "expected": "inspect-state"
+        }
+      ]
+    },
+    "compatibility": {
+      "top1_accuracy": 1,
+      "mrr": 1,
+      "pairwise_ordering": 1,
+      "per_relation": {
+        "appropriate_next_action": {
+          "n": 4,
+          "correct": 4
+        },
+        "appropriate_remediation": {
+          "n": 2,
+          "correct": 2
+        },
+        "appropriate_tool": {
+          "n": 2,
+          "correct": 2
+        },
+        "appropriate_model": {
+          "n": 2,
+          "correct": 2
+        },
+        "appropriate_context_operation": {
+          "n": 1,
+          "correct": 1
+        }
+      },
+      "misses": []
+    }
+  },
+  "compatibility_calibration": {
+    "coverage": 1,
+    "accuracy_at_coverage": 1,
+    "confident_wrong_rate": 0,
+    "abstention_accuracy": 1,
+    "mean_top1_top2_margin": 0.505
+  },
+  "warning": "heuristic-v0.1 self-evaluation on authored fixtures; NOT a retrieval-utility result. Scores are uncalibrated ordering evidence, never probabilities."
+}

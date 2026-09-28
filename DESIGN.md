@@ -55,6 +55,23 @@ Include same entities/opposite claim, same topic/unrelated proposition, reversed
 
 No global graph database, general retrieval, truth arbitration, source rewriting, attention ranking, or action permission.
 
+## Compatibility ranking (experimental)
+
+`rankCandidates(subject, candidates, relation)` is the asymmetric sibling of
+`classifyPair`: need→action affinity plus directional grounding, deterministic,
+bounded at 16 candidates. Status follows explicit thresholds
+(top ≥ 0.55 and margin ≥ 0.15 → `observed`; top ≥ 0.40 → `ambiguous`;
+else `unknown`). The `RelationRanking` object must never gain
+`permission_to_execute` (or equivalent) — compatibility is evidence for a
+policy/authority layer, not a substitute for it.
+
 ## Acceptance test
 
 "The migration completed successfully" and "The migration failed for tenant 1847" must not be flattened to "similar". Emit a typed relation or `UNKNOWN`, with evidence and source identity.
+
+## Ranking acceptance test
+
+"The migration failed because the destination schema doesn't contain column
+customer_type" ranked over {inspect schema, retry migration, increase timeout}
+for `appropriate_next_action` must put inspect first with a margin — cosine
+picks retry (shared vocabulary), which is the trap.

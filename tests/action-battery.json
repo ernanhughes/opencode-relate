@@ -1,0 +1,158 @@
+{
+  "battery": "relate-action-v0.1",
+  "note": "RELATE-ACTION v0.1: directed subject→candidate compatibility with hard negatives. trap taxonomy: same-vocab-wrong-action, wrong-order, missing-prerequisite, irrelevant-similar, abstain, multi-acceptable.",
+  "cases": [
+    {
+      "id": "migration-missing-column",
+      "relation": "appropriate_next_action",
+      "subject": "The migration failed because the destination schema doesn't contain column customer_type.",
+      "subject_kind": "state",
+      "candidate_kind": "action",
+      "positive": { "id": "inspect-schema", "text": "Inspect the destination schema and list columns to confirm customer_type is absent" },
+      "negatives": [
+        { "id": "retry-migration", "text": "Retry the migration against the same destination schema", "trap": "same-vocab-wrong-action" },
+        { "id": "increase-timeout", "text": "Increase the migration timeout and retry with a longer deadline", "trap": "irrelevant-similar" },
+        { "id": "regen-creds", "text": "Regenerate database credentials and rotate the API key", "trap": "irrelevant-similar" },
+        { "id": "delete-state", "text": "Delete the migration state and drop the state lock", "trap": "missing-prerequisite" }
+      ]
+    },
+    {
+      "id": "migration-timeout",
+      "relation": "appropriate_next_action",
+      "subject": "The migration failed after 30s with a deadline exceeded timeout while copying 40M rows.",
+      "subject_kind": "state",
+      "candidate_kind": "action",
+      "positive": { "id": "increase-timeout", "text": "Increase the migration timeout and rerun with a longer deadline" },
+      "negatives": [
+        { "id": "regen-creds", "text": "Regenerate database credentials and rotate the API key", "trap": "irrelevant-similar" },
+        { "id": "delete-state", "text": "Delete the migration state and drop the state lock", "trap": "missing-prerequisite" },
+        { "id": "inspect-schema", "text": "Inspect the destination schema and list columns", "trap": "same-vocab-wrong-action" }
+      ]
+    },
+    {
+      "id": "auth-expired-token",
+      "relation": "appropriate_remediation",
+      "subject": "Deploy failed with 401 unauthorized: the API token expired yesterday.",
+      "subject_kind": "error",
+      "candidate_kind": "remediation",
+      "positive": { "id": "regen-creds", "text": "Regenerate the API key and refresh the expired token" },
+      "negatives": [
+        { "id": "retry-deploy", "text": "Retry the deploy against the same configuration", "trap": "wrong-order" },
+        { "id": "increase-timeout", "text": "Increase the deploy timeout and retry with a longer deadline", "trap": "irrelevant-similar" },
+        { "id": "rollback", "text": "Rollback the previous release to the last known version", "trap": "same-vocab-wrong-action" }
+      ]
+    },
+    {
+      "id": "state-lock-conflict",
+      "relation": "appropriate_remediation",
+      "subject": "Apply failed: migration state lock is held and state reports dirty after an interrupted run.",
+      "subject_kind": "error",
+      "candidate_kind": "remediation",
+      "positive": { "id": "inspect-state", "text": "Inspect the migration state lock and diagnose which run holds it" },
+      "negatives": [
+        { "id": "retry-apply", "text": "Retry the apply against the same locked state", "trap": "wrong-order" },
+        { "id": "delete-state", "text": "Delete the migration state and drop the state lock without inspection", "trap": "missing-prerequisite" },
+        { "id": "regen-creds", "text": "Regenerate credentials and rotate the API key", "trap": "irrelevant-similar" }
+      ]
+    },
+    {
+      "id": "retry-before-inspect-order",
+      "relation": "appropriate_next_action",
+      "subject": "The migration failed because the destination schema doesn't contain column customer_type. No inspection has been performed yet.",
+      "subject_kind": "state",
+      "candidate_kind": "action",
+      "positive": { "id": "inspect-first", "text": "Inspect the destination schema to confirm which columns exist" },
+      "negatives": [
+        { "id": "retry-now", "text": "Retry the migration immediately against the same destination", "trap": "wrong-order" },
+        { "id": "rollback-now", "text": "Rollback the migration to the previous release", "trap": "wrong-order" }
+      ]
+    },
+    {
+      "id": "tool-find-definition",
+      "relation": "appropriate_tool",
+      "subject": "Need to find which file defines the retry policy with exponential backoff.",
+      "subject_kind": "task",
+      "candidate_kind": "tool",
+      "positive": { "id": "grep", "text": "grep search across the repo for retry policy and backoff definitions" },
+      "negatives": [
+        { "id": "bash-exec", "text": "bash execute the test suite and build the project", "trap": "same-vocab-wrong-action" },
+        { "id": "regen-creds", "text": "regenerate credentials and rotate secrets", "trap": "irrelevant-similar" }
+      ]
+    },
+    {
+      "id": "tool-read-file",
+      "relation": "appropriate_tool",
+      "subject": "Read the contents of src/engine/classify.ts to review the heuristic.",
+      "subject_kind": "task",
+      "candidate_kind": "tool",
+      "positive": { "id": "read", "text": "read open the file src/engine/classify.ts and show contents" },
+      "negatives": [
+        { "id": "grep", "text": "grep search the repo for classify mentions", "trap": "same-vocab-wrong-action" },
+        { "id": "delete-state", "text": "delete the migration state file", "trap": "irrelevant-similar" }
+      ]
+    },
+    {
+      "id": "model-simple-task",
+      "relation": "appropriate_model",
+      "subject": "Trivial formatting task: rename a variable across two files.",
+      "subject_kind": "task",
+      "candidate_kind": "model",
+      "positive": { "id": "cheap", "text": "cheap fast small mini model for a trivial rename" },
+      "negatives": [
+        { "id": "frontier", "text": "frontier strongest expert opus model with deep reasoning", "trap": "same-vocab-wrong-action" }
+      ]
+    },
+    {
+      "id": "model-hard-bug",
+      "relation": "appropriate_model",
+      "subject": "Novel distributed-systems bug requiring deep reasoning across the codebase.",
+      "subject_kind": "task",
+      "candidate_kind": "model",
+      "positive": { "id": "frontier", "text": "frontier strongest expert model for deep reasoning" },
+      "negatives": [
+        { "id": "cheap", "text": "cheap fast mini model for a quick answer", "trap": "same-vocab-wrong-action" }
+      ]
+    },
+    {
+      "id": "context-overflow",
+      "relation": "appropriate_context_operation",
+      "subject": "Context exceeds the token limit with 200k tokens loaded; must keep working.",
+      "subject_kind": "state",
+      "candidate_kind": "operation",
+      "positive": { "id": "compress", "text": "compress and summarize the oldest context to fit the limit" },
+      "negatives": [
+        { "id": "expand", "text": "expand context and retrieve more documents into the window", "trap": "same-vocab-wrong-action" },
+        { "id": "discard-all", "text": "discard all context including the current task state", "trap": "missing-prerequisite" }
+      ]
+    },
+    {
+      "id": "abstain-vague-state",
+      "relation": "appropriate_next_action",
+      "subject": "Something feels off about the system lately.",
+      "subject_kind": "state",
+      "candidate_kind": "action",
+      "positive": null,
+      "abstain": true,
+      "negatives": [
+        { "id": "retry", "text": "Retry the migration against the destination", "trap": "abstain" },
+        { "id": "regen", "text": "Regenerate credentials and rotate keys", "trap": "abstain" }
+      ]
+    },
+    {
+      "id": "multi-acceptable-inspect",
+      "relation": "appropriate_next_action",
+      "subject": "The migration failed because the destination schema doesn't contain column customer_type.",
+      "subject_kind": "state",
+      "candidate_kind": "action",
+      "positive": { "id": "inspect-schema", "text": "Inspect the destination schema and list columns" },
+      "acceptable": ["diagnose-schema"],
+      "negatives": [
+        { "id": "retry-migration", "text": "Retry the migration against the same destination schema", "trap": "same-vocab-wrong-action" },
+        { "id": "increase-timeout", "text": "Increase the migration timeout and retry", "trap": "irrelevant-similar" }
+      ],
+      "extra_acceptable": [
+        { "id": "diagnose-schema", "text": "Diagnose the destination schema mismatch and examine missing columns" }
+      ]
+    }
+  ]
+}

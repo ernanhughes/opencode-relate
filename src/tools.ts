@@ -1,5 +1,5 @@
 import type { Info as ToolInfo } from "@opencode/plugin/promise/tool";
-import { classifyPair } from "./engine/index.ts";
+import { classifyPair, rankCandidates } from "./engine/index.ts";
 import { RelateError, type SourceRef } from "./engine/types.ts";
 
 function toRef(o: unknown, fallbackKind: string): SourceRef {
@@ -94,11 +94,85 @@ export function RelateHealth(): ToolInfo {
     description: "Report relate readiness and taxonomy without performing inference.",
     input: { type: "object", properties: {}, additionalProperties: false },
     async execute() {
-      return { content: JSON.stringify({ ok: true, version: "0.1.0", taxonomy: ["SUPPORTS", "CONTRADICTS", "UPDATES", "IMPLEMENTS", "RELATED", "UNKNOWN"] }) };
+      return {
+        content: JSON.stringify({
+          ok: true,
+          version: "0.1.0",
+          taxonomy: ["SUPPORTS", "CONTRADICTS", "UPDATES", "IMPLEMENTS", "RELATED", "UNKNOWN"],
+          rank_relations: [
+            "appropriate_next_action",
+            "appropriate_remediation",
+            "appropriate_tool",
+            "appropriate_model",
+            "appropriate_context_operation",
+          ],
+        }),
+      };
+    },
+  };
+}
+
+export function RelateRank(): ToolInfo {
+  return {
+    name: "relate_rank",
+    description:
+      "Rank up to 16 candidate texts by directed compatibility with a subject state for one relation (e.g. appropriate_next_action). Returns a RelationRanking with margin, calibration thresholds, and observed/ambiguous/unknown status. Measurement evidence only — never permission to execute.",
+    input: {
+      type: "object",
+      properties: {
+        subject_text: { type: "string", minLength: 1 },
+        subject: { type: "object", properties: { id: { type: "string" }, kind: { type: "string" } }, additionalProperties: false },
+        subject_kind: { type: "string" },
+        candidate_kind: { type: "string" },
+        relation: { type: "string", minLength: 1 },
+        candidates: {
+          type: "array",
+          minItems: 1,
+          maxItems: 16,
+          items: {
+            type: "object",
+            properties: {
+              text: { type: "string", minLength: 1 },
+              id: { type: "string" },
+              kind: { type: "string" },
+            },
+            required: ["text"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["subject_text", "relation", "candidates"],
+      additionalProperties: false,
+    },
+    async execute(input) {
+      const args = input as {
+        subject_text: string;
+        subject?: unknown;
+        subject_kind?: string;
+        candidate_kind?: string;
+        relation: string;
+        candidates: Array<{ text: string; id?: string; kind?: string }>;
+      };
+      try {
+        const ranking = rankCandidates(
+          args.subject_text,
+          args.candidates.map((c, i) => ({ id: c.id ?? `candidate-${i}`, text: c.text, kind: c.kind })),
+          args.relation,
+          {
+            subjectRef: toRef(args.subject, args.subject_kind ?? "state"),
+            subject_kind: args.subject_kind,
+            candidate_kind: args.candidate_kind,
+          },
+        );
+        return { content: JSON.stringify({ ranking }, null, 2) };
+      } catch (error) {
+        if (error instanceof RelateError) return { content: JSON.stringify({ error: error.code, message: error.message }) };
+        throw error;
+      }
     },
   };
 }
 
 export function relateTools(): ToolInfo[] {
-  return [RelatePair(), RelateMany(), RelateHealth()];
+  return [RelatePair(), RelateMany(), RelateRank(), RelateHealth()];
 }

@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "relate-action-trace-v0.1",
+  "description": "Single state→action→state transition with downstream outcome evidence. Derives RELATE-ACTION v0.2 cases; never imitates historic choice. Compatibility evidence only — no permission field may be added.",
+  "type": "object",
+  "required": ["trace_id", "relation", "state_before", "candidates_available", "outcome_evidence", "provenance"],
+  "properties": {
+    "trace_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string" },
+    "observed_at": { "type": "string" },
+    "relation": {
+      "type": "string",
+      "description": "One of the five earned rank relations; new relations require their own experiment card."
+    },
+    "subject_kind": { "type": "string", "default": "state" },
+    "candidate_kind": { "type": "string", "default": "action" },
+    "state_before": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "candidates_available": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "required": ["id", "text"],
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string", "minLength": 1 },
+          "kind": { "type": "string" },
+          "elicitation": {
+            "type": "string",
+            "enum": ["logged", "reconstructed"],
+            "description": "logged: appeared verbatim in the session. reconstructed: rebuilt by extractor; record method in provenance."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "action_chosen": {
+      "type": ["string", "null"],
+      "description": "Candidate id actually selected, or null if none was. Historical fact only — NOT the target label."
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "succeeded": { "enum": ["yes", "no", "unknown"] },
+        "summary": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "state_after": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "eventual_outcome": {
+      "type": "object",
+      "properties": {
+        "result": { "enum": ["success", "failure", "unknown"] },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "outcome_evidence": {
+      "type": "object",
+      "description": "Per-candidate downstream evidence, answered separately. Unknown is a valid answer per field.",
+      "patternProperties": {
+        ".+": {
+          "type": "object",
+          "required": ["selected"],
+          "properties": {
+            "selected": { "type": "boolean" },
+            "exec_succeeded": { "enum": ["yes", "no", "na", "unknown"] },
+            "reduced_problem": { "enum": ["yes", "no", "unknown"] },
+            "enabled_later_step": { "enum": ["yes", "no", "unknown"] },
+            "created_new_failure": { "enum": ["yes", "no", "unknown"] },
+            "appropriateness": {
+              "enum": ["NECESSARY", "HELPFUL", "HARMFUL", "IRRELEVANT", "UNKNOWN"],
+              "description": "Annotator judgment from downstream evidence, never from historic choice alone. CHOSEN is not a value here by design."
+            },
+            "rationale": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["source", "extractor", "annotator_blind_to_scores"],
+      "properties": {
+        "source": { "type": "string", "description": "Session log path / id the transition was extracted from." },
+        "extractor": { "type": "string", "description": "Extractor version / method." },
+        "annotator_blind_to_scores": { "type": "boolean", "description": "True iff the annotator never saw compatibility scores for this trace." }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

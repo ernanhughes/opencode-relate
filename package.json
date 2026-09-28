@@ -8,12 +8,13 @@
     ".": "./src/index.ts",
     "./core": "./src/engine/index.ts"
   },
-  "files": ["index.ts", "src", "scripts", "examples", "tests/battery.json", "README.md", "DESIGN.md", "LICENSE"],
+  "files": ["index.ts", "src", "scripts", "examples", "experiments", "tests/battery.json", "tests/action-battery.json", "README.md", "DESIGN.md", "LICENSE"],
   "engines": { "node": ">=22.18.0" },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "node --test tests/*.test.ts",
     "eval": "node scripts/eval.ts",
+    "eval-actions": "node scripts/eval-actions.ts",
     "load-check": "node scripts/load-check.ts"
   },
   "dependencies": {
